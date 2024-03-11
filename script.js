@@ -9,92 +9,71 @@ const body = document.querySelector("body");
 const again = document.querySelector(".again");
 const highscore = document.querySelector(".highscore");
 
-number.value = Math.trunc(Math.random() * 20) + 1;
-score.value = 20;
+const winningBgColor = "#60b347";
+const losingBgColor = "#a80505";
+const initialBgColor = "#222";
+
 let winCondition = false;
 
-check.addEventListener("click", conditions);
-
+check.addEventListener("click", checkGuess);
 again.addEventListener("click", playAgain);
 
-function conditions() {
+initializeGame();
+
+function initializeGame() {
+  number.value = Math.trunc(Math.random() * 20) + 1;
+  score.value = 20;
+}
+
+function checkGuess() {
   if (!guess.value) {
-    noInput();
+    updateGame("🛑 No Number");
   } else if (+guess.value === number.value) {
     winGame();
   } else if (+guess.value > number.value && +guess.value <= 20) {
-    greaterNumber();
+    updateGame("⏫ Too High!");
   } else if (+guess.value >= 1 && +guess.value < number.value) {
-    lowerNumber();
+    updateGame("⏬ Too Low!");
   } else {
-    invalidNumber();
+    updateGame("🛑 Invalid Number");
   }
   score.textContent = score.value;
 }
 
-function noInput() {
-  if (score.value > 1) {
-    message.textContent = "🛑 No Number";
-  } else {
-    loseGame();
+function updateGame(messageText) {
+  if (score.value > 1 && !winCondition) {
+    message.textContent = messageText;
+    score.value--;
+    if (score.value === 1) {
+      loseGame();
+    }
   }
 }
 
 function winGame() {
-  if (score.value > 1 && winCondition === false) {
-    message.textContent = "✨ Correct Number!";
-    body.style.backgroundColor = "#60b347";
-    number.style.width = "30rem";
-    number.innerText = number.value;
-    if (highscore.innerText < score.value) {
-      highscore.innerText = score.value;
-    }
-    winCondition = true;
-  } else if (score.value === 1) {
-    loseGame();
+  message.textContent = "✨ Correct Number!";
+  body.style.backgroundColor = winningBgColor;
+  number.style.width = "30rem";
+  number.innerText = number.value;
+  if (highscore.innerText < score.value) {
+    highscore.innerText = score.value;
   }
+  winCondition = true;
 }
 
 function loseGame() {
   message.textContent = "❌ You lost the game!";
-  body.style.backgroundColor = "#a80505";
+  body.style.backgroundColor = losingBgColor;
   number.style.width = "30rem";
   number.textContent = number.value;
   score.value = 0;
 }
 
-function greaterNumber() {
-  if (score.value > 1 && winCondition === false) {
-    message.textContent = "⏫ Too High!";
-    score.value--;
-  } else if (score.value === 1) {
-    loseGame();
-  }
-}
-
-function lowerNumber() {
-  if (score.value > 1 && winCondition === false) {
-    message.textContent = "⏬ Too Low!";
-    score.value--;
-  } else if (score.value === 1) {
-    loseGame();
-  }
-}
-
-function invalidNumber() {
-  if (score.value > 1 && winCondition === false) {
-    message.textContent = "🛑 Invalid Number";
-  } else if (score.value === 1) {
-    loseGame();
-  }
-}
-
 function playAgain() {
-  number.value = Math.trunc(Math.random() * 20) + 1;
-  score.value = 20;
+  initializeGame();
   score.innerText = 20;
   message.textContent = "Start guessing...";
-  body.style.backgroundColor = "#222";
+  body.style.backgroundColor = initialBgColor;
   number.style.width = "15rem";
   number.innerText = "?";
   guess.value = "";
